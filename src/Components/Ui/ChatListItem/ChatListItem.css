@@ -1,0 +1,8 @@
+
+.ListItemContacts{
+    width: 20%;
+    height: 90%;
+    overflow: hidden;
+    overflow-y: scroll;
+
+}
