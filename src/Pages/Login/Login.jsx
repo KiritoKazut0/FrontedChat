@@ -33,7 +33,7 @@ export default function Login() {
                 localStorage.setItem('username', data.name);
                 localStorage.setItem('email', data.email);
                 localStorage.setItem('token', token);
-                navigate('/home');
+                navigate('/message');
             } else {
                 setMessageErrorLogged(true)
             }

@@ -1,17 +1,26 @@
-
-div.container-Contacts{
+div.container-Contacts {
     width: 74%;
     padding: 0 3%;
     height: 100%;
     display: flex;
     flex-direction: column;
-    
+} 
+
+
+div.container-headerContacts{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 div.container-icon{
     display: flex;
-    width: 100%;
+    width: 40%;
     padding: 4% 0 1% 0;
     gap: 20px;
     align-items: center;
+
+
 }
+

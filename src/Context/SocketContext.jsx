@@ -63,10 +63,10 @@ export const WebsocketProvider = ({children}) => {
         });
 
         socketIo.on('contacts', (data) => {
-            console.log('cargando los mensajes', data);
             setContacts(data)
 
-        })
+        });
+
         socketIo.emit('getContacts', 'ping');  
 
 
@@ -106,7 +106,8 @@ export const WebsocketProvider = ({children}) => {
         activeNotify,
         openSnack,
         setOpenSnack,
-        contacts
+        contacts,
+        setContacts
     }
 
     return (

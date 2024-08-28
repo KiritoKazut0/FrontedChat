@@ -20,11 +20,11 @@ import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 import SendRoundedIcon from '@mui/icons-material/SendRounded';
 import ContactsRoundedIcon from '@mui/icons-material/ContactsRounded';
 import { useState } from 'react';
-
+import { useNavigate } from 'react-router-dom';
 
 export default function Sidebar() {
     const [selectedItem, setSelectedItem] = useState('');
-
+    const navigate = useNavigate();
     const username = localStorage.getItem('username'); 
     const email = localStorage.getItem('email'); 
     const handleSelectItem = (itemId) => {
@@ -70,8 +70,10 @@ export default function Sidebar() {
                         <ListItem>
                             <ListItemButton
                                 selected={selectedItem === 'contacts'}
-                                onClick={() => handleSelectItem('contacts')}
-                            >
+                                onClick={() => {
+                                    navigate('/contacts')
+                                    handleSelectItem('contacts')
+                                }}>
                                 <ContactsRoundedIcon />
                                 <ListItemContent>
                                     <Typography level="title-sm">Contacts</Typography>
@@ -82,7 +84,10 @@ export default function Sidebar() {
                         <ListItem>
                             <ListItemButton
                                 selected={selectedItem === 'messages'}
-                                onClick={() => handleSelectItem('messages')}
+                                onClick={() => {
+                                    navigate('/message')
+                                    handleSelectItem('messages')
+                                }}
                             >
                                 <QuestionAnswerRoundedIcon />
                                 <ListItemContent>

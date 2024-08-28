@@ -36,3 +36,31 @@ export const email = (correo) => {
     return { isValid: true, message: "" }; 
 };
 
+
+export const countryCode = (code) => {
+    const regex = /^\+\d{1,3}$/;
+
+    if (!code) {
+        return { isValid: false, message: "El campo no puede estar vacío" };
+    }
+    if (!regex.test(code)) {
+        return { isValid: false, message: "El código de país debe iniciar con '+' y contener entre 1 y 3 dígitos" };
+    }
+    return { isValid: true, message: "" };
+};
+
+
+export const phone = (phone) => {
+    const regex = /^\d{10}$/;
+
+    if (!phone) {
+        return { isValid: false, message: "El campo no puede estar vacío" };
+    }
+    if (!regex.test(phone)) {
+        return { isValid: false, message: "El número de teléfono debe contener solo 10 dígitos" };
+    }
+    return { isValid: true, message: "" };
+};
+
+
+

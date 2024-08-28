@@ -1,4 +1,4 @@
-import './Home.css'
+import './Message.css'
 import ChatListItems from "../../Components/Ui/ChatListItem/ChatListItem";
 import MessagesPane from "../../Components/Ui/MessagePane/MessagePane";
 import { useState } from 'react';
@@ -6,7 +6,7 @@ import Notification from '../../Components/Ui/Notification/Notifications';
 import ChatWelcome from '../../Components/Ui/ChatWelcome/ChatWelcome';
 
 
-export default function Home() {
+export default function Message() {
 
     const [getidContact, setIdContact] = useState('');
     const [getDataContact, setDataContact] = useState({

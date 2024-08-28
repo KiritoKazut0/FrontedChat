@@ -1,5 +1,5 @@
 import Login from "./Pages/Login/Login"
-import Home from "./Pages/Home/Home"
+import Message from "./Pages/Message/Message"
 import Contacts from "./Pages/Contacts/Contacts"
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom"
 import { WebsocketProvider } from "./Context/SocketContext"
@@ -25,8 +25,8 @@ const router = createBrowserRouter([
     element: <WebsocketLayout />,
     children: [
       {
-        path: "/home",
-        element: <Home />
+        path: "/message",
+        element: <Message/>
       },
       {
         path: "/contacts",
