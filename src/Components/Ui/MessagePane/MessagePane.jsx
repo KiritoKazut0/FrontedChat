@@ -1,36 +1,52 @@
-import * as React from 'react';
+import { WebsocketContext } from '../../../Context/SocketContext';
 import Box from '@mui/joy/Box';
 import Sheet from '@mui/joy/Sheet';
 import Stack from '@mui/joy/Stack';
-import AvatarWithStatus from './AvatarWithStatus';
-import ChatBubble from './ChatBubble';
-import MessageInput from './MessageInput';
-import MessagesPaneHeader from './MessagesPaneHeader';
-import { ChatProps, MessageProps } from '../types';
+import MessageInput from '../MessageInput/MessageInput';
+import MessagesPaneHeader from '../MessagePaneHeader/MessagePaneHeader';
+import { useState, useEffect, useContext, useMemo} from 'react';
+import AvatarWithStatus from '../AvatarWhithStatus/AvatarWithStatus';
+import ChatBubble from '../ChatBuble/ChatBuble';
+import formatTimestamp from '../../../Utils/FormatTimestamp';
 
-type MessagesPaneProps = {
-  chat: ChatProps;
-};
+export default function MessagesPane({id, dataContact}) {
 
-export default function MessagesPane(props: MessagesPaneProps) {
-  const { chat } = props;
-  const [chatMessages, setChatMessages] = React.useState(chat.messages);
-  const [textAreaValue, setTextAreaValue] = React.useState('');
+  const [textAreaValue, setTextAreaValue] = useState('');
+  const [chat, setChat] = useState([]);
+  const [chatMessages, setChatMessages] = useState([]);
+  const { requestMessages, messagesByChat } = useContext(WebsocketContext);
 
-  React.useEffect(() => {
-    setChatMessages(chat.messages);
-  }, [chat.messages]);
+  useEffect(() => {
+    requestMessages(id);
+  }, [id]);
+
+
+  const formattedChatMessages = useMemo(() => {
+    const chatMessages = messagesByChat[id] || [];
+    return chatMessages.map(message => ({
+      ...message,
+      timestamp: formatTimestamp(message.timestamp),
+    }));
+  }, [id, messagesByChat]);
+
+
+useEffect(() => {
+  setChat(formattedChatMessages);
+}, [formattedChatMessages]);
+
+
 
   return (
     <Sheet
       sx={{
+        width: "70%",
         height: { xs: 'calc(100dvh - var(--Header-height))', lg: '100dvh' },
         display: 'flex',
         flexDirection: 'column',
         backgroundColor: 'background.level1',
-      }}
-    >
-      <MessagesPaneHeader sender={chat.sender} />
+      }}>
+
+      <MessagesPaneHeader dataContact={dataContact} />
       <Box
         sx={{
           display: 'flex',
@@ -40,11 +56,13 @@ export default function MessagesPane(props: MessagesPaneProps) {
           py: 3,
           overflowY: 'scroll',
           flexDirection: 'column-reverse',
-        }}
-      >
+         
+        }}>
+
         <Stack spacing={2} justifyContent="flex-end">
-          {chatMessages.map((message: MessageProps, index: number) => {
-            const isYou = message.sender === 'You';
+        {chat?.map((message, index) => {
+            const isYou = message.status === 'send';
+           
             return (
               <Stack
                 key={index}
@@ -52,35 +70,42 @@ export default function MessagesPane(props: MessagesPaneProps) {
                 spacing={2}
                 flexDirection={isYou ? 'row-reverse' : 'row'}
               >
-                {message.sender !== 'You' && (
+                {message.status !== 'send' && (
                   <AvatarWithStatus
-                    online={message.sender.online}
-                    src={message.sender.avatar}
+                    online={false}
+                  
                   />
                 )}
-                <ChatBubble variant={isYou ? 'sent' : 'received'} {...message} />
+                <ChatBubble
+                
+                   sender={isYou ? 'You' : message.contactId.name}
+                    content={message.content}
+                    timestamp={message.timestamp} 
+                    variant={message.status}
+                    />
               </Stack>
             );
           })}
+
         </Stack>
       </Box>
+      
       <MessageInput
         textAreaValue={textAreaValue}
         setTextAreaValue={setTextAreaValue}
-        onSubmit={() => {
-          const newId = chatMessages.length + 1;
-          const newIdString = newId.toString();
+        dataContact={dataContact}
+        onSubmit={ () => {  
           setChatMessages([
             ...chatMessages,
             {
-              id: newIdString,
+              id: dataContact._id,
               sender: 'You',
               content: textAreaValue,
               timestamp: 'Just now',
             },
           ]);
         }}
-      />
+      /> 
     </Sheet>
   );
 }

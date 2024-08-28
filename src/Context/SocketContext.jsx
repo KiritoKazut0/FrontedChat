@@ -1,12 +1,40 @@
-import {createContext, useContext, useEffect, useCallback, useState } from "react";
+import {createContext, useEffect, useCallback, useState } from "react";
 import { io } from "socket.io-client";
 
 export const WebsocketContext = createContext();
 
 export const WebsocketProvider = ({children}) => {
     const [socket, setSocket] = useState(null);
-    const[message, setMessage] = useState({});
+    const [messagesByChat, setMessagesByChat] = useState({});
+    const [activeNotify, setActiveNotify] = useState([]);
+    const [openSnack, setOpenSnack] = useState(false);
+    const [contacts, setContacts] = useState([]);
 
+    const updateMessages = useCallback((chatId, newMessages) => {
+        setMessagesByChat(prevMessages => {
+          
+            const existingMessages = prevMessages[chatId] || [];
+        
+            const existingMessageIds = new Set(existingMessages.map(message => message.id));
+            console.log({
+                newMessages
+            })
+            const filteredNewMessages = newMessages.filter(message => !existingMessageIds.has(message.id));
+                console.log({
+                    existingMessageIds,
+                    filteredNewMessages
+                })
+            return {
+                ...prevMessages,
+                [chatId]: [
+                    ...existingMessages,
+                    ...filteredNewMessages
+                ]
+            };
+        });
+    }, []);
+    
+    
 
     useEffect (() => {
         const socketIo = io('http://localhost:3000/', {
@@ -19,43 +47,70 @@ export const WebsocketProvider = ({children}) => {
 
 
         socketIo.on('connect', () => {
-            console.log('Conectado al servidor websocket')
+            console.log('Conectado al servidor websocket');
         });
 
-        socketIo.on('private_message', (serverOffset, result) => {
-            console.log('Mensaje privado recibido:',{
-                serverOffset,
-                result
-            });
-            // socket.auth.serverOffset = serverOffset;
+        socketIo.on('private_message', (serverOffset, chatId, result) => {
+            updateMessages(chatId, result);
             socketIo.auth.serverOffset = serverOffset;
         });
 
+        socketIo.on('newMesssage', (serverOffset, chatId, result) => {
+            updateMessages(chatId, result);
+            setActiveNotify(result);
+            setOpenSnack(true);
+            socketIo.auth.serverOffset = serverOffset;
+        });
+
+        socketIo.on('contacts', (data) => {
+            console.log('cargando los mensajes', data);
+            setContacts(data)
+
+        })
+        socketIo.emit('getContacts', 'ping');  
 
 
         socketIo.on('error', (error) => {
-            console.error('Error en la conexión WebSocket:', error);
+            console.error('Error:', error);
         });
 
         setSocket(socketIo);
 
-        //desmontar el socket 
+     
         return () => {
             socketIo.disconnect();
         }
 
     }, []);
 
-    const sendMessage = (contactId, message) => {
+    const sendMessage = (data) => {
         if (socket) {
-            socket.emit('send_private_message', {
-                contactId, message
-            })
+            socket.emit('sendMessage' ,data);
         }
     }
 
+ 
+
+    const requestMessages  = useCallback ((contactId) => {
+        if (socket) {
+            socket.emit('getMessage', contactId); 
+            
+        }
+    },[socket]);
+
+
+    const value= {
+        sendMessage,
+        requestMessages,
+        messagesByChat,
+        activeNotify,
+        openSnack,
+        setOpenSnack,
+        contacts
+    }
+
     return (
-        <WebsocketContext.Provider value={{socket, sendMessage}}>
+        <WebsocketContext.Provider value={value}>
             {children}
         </WebsocketContext.Provider>
     );
