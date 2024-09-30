@@ -20,7 +20,7 @@ export default function DeleteModal({handlerDelete, id}) {
         startDecorator={<DeleteForever />}
         onClick={() => setOpen(true)}
       >
-        Discard
+        Delete
       </Button>
       <Modal open={open} onClose={() => setOpen(false)}>
         <ModalDialog variant="outlined" role="alertdialog">

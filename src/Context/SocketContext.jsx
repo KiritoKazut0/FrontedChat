@@ -11,10 +11,9 @@ export const WebsocketProvider = ({children}) => {
     const [contacts, setContacts] = useState([]);
 
     const updateMessages = useCallback((chatId, newMessages) => {
+
         setMessagesByChat(prevMessages => {
-          
             const existingMessages = prevMessages[chatId] || [];
-        
             const existingMessageIds = new Set(existingMessages.map(message => message.id));
             console.log({
                 newMessages
@@ -34,6 +33,18 @@ export const WebsocketProvider = ({children}) => {
         });
     }, []);
     
+    const updateContacts = useCallback((newContactData) => {
+        setContacts(prevContacts => {
+            const newContact = Array.isArray(newContactData) ? newContactData[0] : newContactData;
+            const contactExists = prevContacts.some(contact => contact._id === newContact._id);
+            
+            if (contactExists) {
+                return prevContacts;
+            } else {
+                return [...prevContacts, newContact];
+            }
+        });
+    }, []);
     
 
     useEffect (() => {
@@ -64,10 +75,13 @@ export const WebsocketProvider = ({children}) => {
 
         socketIo.on('contacts', (data) => {
             setContacts(data)
-
         });
 
-        socketIo.emit('getContacts', 'ping');  
+        socketIo.on('newContact', (data) => {
+            updateContacts(data);
+        })
+
+        socketIo.emit('getContacts');  
 
 
         socketIo.on('error', (error) => {
@@ -83,13 +97,12 @@ export const WebsocketProvider = ({children}) => {
 
     }, []);
 
+
     const sendMessage = (data) => {
         if (socket) {
             socket.emit('sendMessage' ,data);
         }
     }
-
- 
 
     const requestMessages  = useCallback ((contactId) => {
         if (socket) {

@@ -38,6 +38,7 @@ export const email = (correo) => {
 
 
 export const countryCode = (code) => {
+    console.log('code:', code)
     const regex = /^\+\d{1,3}$/;
 
     if (!code) {
@@ -51,6 +52,7 @@ export const countryCode = (code) => {
 
 
 export const phone = (phone) => {
+    console.log('phone:', phone)
     const regex = /^\d{10}$/;
 
     if (!phone) {

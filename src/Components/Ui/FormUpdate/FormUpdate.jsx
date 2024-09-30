@@ -18,6 +18,7 @@ export default function FormUpdate({handlerEdit, id}) {
   return (
     <>
       <Button
+        variant='outlined'
         color="primary"
         startDecorator={<EditIcon sx={{ transform: 'rotate(265deg)'}}  />}
         onClick={() => setOpen(true)}

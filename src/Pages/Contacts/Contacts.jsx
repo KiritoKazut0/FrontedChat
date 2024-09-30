@@ -4,11 +4,12 @@ import Box from "@mui/material/Box";
 import Typography from '@mui/joy/Typography';
 import ContactsRoundedIcon from '@mui/icons-material/ContactsRounded';
 import { WebsocketContext } from '../../Context/SocketContext';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import ModalSucceful from '../../Components/Ui/ModalSucceful/ModalSucceful'; 
 import DeleteContact from '../../Service/Contacts/DeleteContact';
 import ModalForm from '../../Components/Ui/ModalForm/ModalForm';
 import updateNameContact from '../../Service/Contacts/UpdateContacts';
+import AddContact from '../../Service/Contacts/AddContacts';
 
 export default function Contacts() {
     const { contacts, setContacts } = useContext(WebsocketContext);
@@ -63,6 +64,28 @@ export default function Contacts() {
         }
     };
 
+    const handlerNewContact  = async (name, phone, countryCode) => {
+        try {
+            await AddContact({name, phone, countryCode});
+            setMessage({
+                message: 'The contact name has been updated successfully.',
+                status: true
+            });
+            setOpenModal(true); 
+        } catch (error) {
+            console.log(error);
+            setMessage({
+                message: 'There was an error creating a new contact',
+                status: false
+            });
+            setOpenModal(true);    
+        }
+    }
+
+    useEffect(() => {
+
+    }, [contacts])
+
     return (
         <Box className="container-Contacts">
             <Box className="container-headerContacts">
@@ -70,7 +93,7 @@ export default function Contacts() {
                     <ContactsRoundedIcon sx={{ color: "#000000c3" }} />
                     <Typography level='body-lg' sx={{ fontSize: "24px" }}>List Contacts</Typography>
                 </div>
-                <ModalForm />
+                <ModalForm handlerAddContact={handlerNewContact} />
             </Box>
 
             <ListContacts 

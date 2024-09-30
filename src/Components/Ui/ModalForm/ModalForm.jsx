@@ -11,11 +11,13 @@ import Add from '@mui/icons-material/Add';
 import { useState } from 'react';
 import useField from '../../../Hooks/useField';
 
-export default function ModalForm() {
+export default function ModalForm({handlerAddContact}) {
   const [open, setOpen] = useState(false);
   const name = useField({type: 'name'});
   const phone = useField({type: 'phone'});
-  const countryCode = useField('countryCode')
+  const countryCode = useField({type: 'countryCode'});
+
+
 
   return (
     <>
@@ -39,6 +41,7 @@ export default function ModalForm() {
           <form
             onSubmit={(event) => {
               event.preventDefault();
+              handlerAddContact(name.value, phone.value, countryCode.value);
               setOpen(false);
             }}
           >

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const AddContacts = async (data) => {
+const AddContact = async (data) => {
     try {
         const token = localStorage.getItem('token');
         const response = await axios.post(
@@ -19,4 +19,4 @@ const AddContacts = async (data) => {
     }
 };
 
-export default AddContacts;
+export default AddContact;

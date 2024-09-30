@@ -1,6 +1,7 @@
 import { useState } from "react";
 import * as validateField from "../Utils/validations/Fields"
 
+
 const useField = ({type}) => {
     const [value, setValue] = useState('');
     const [messageError, setMessageError] = useState('');
